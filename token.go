@@ -150,7 +150,7 @@ func tokenFromInternal(t *internal.Token) *Token {
 // retrieveToken takes a *Config and uses that to retrieve an *internal.Token.
 // This token is then mapped from *internal.Token into an *oauth2.Token which is returned along
 // with an error..
-func RetrieveToken(ctx context.Context, c *Config, v url.Values) (*Token, error) {
+func retrieveToken(ctx context.Context, c *Config, v url.Values) (*Token, error) {
 	tk, err := internal.RetrieveToken(ctx, c.ClientID, c.ClientSecret, c.Endpoint.TokenURL, v)
 	if err != nil {
 		if rErr, ok := err.(*internal.RetrieveError); ok {
@@ -159,6 +159,10 @@ func RetrieveToken(ctx context.Context, c *Config, v url.Values) (*Token, error)
 		return nil, err
 	}
 	return tokenFromInternal(tk), nil
+}
+
+func RetrieveToken(ctx context.Context, c *Config, v url.Values) (*Token, error) {
+	return retrieveToken(ctx, c, v)
 }
 
 // RetrieveError is the error returned when the token endpoint returns a
