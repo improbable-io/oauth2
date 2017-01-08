@@ -113,6 +113,17 @@ func SetAuthURLParam(key, value string) AuthCodeOption {
 	return setParam{key, value}
 }
 
+// An AccessTokenOption is passed to Config.Exchange.
+type AccessTokenOption interface {
+	setValue(url.Values)
+}
+
+// SetAccessTokenOption builds an AccessTokenOption which passes key/value parameters
+// to a provider's access token endpoint.
+func SetAccessTokenOption(key, value string) AccessTokenOption {
+	return setParam{key, value}
+}
+
 // AuthCodeURL returns a URL to OAuth 2.0 provider's consent page
 // that asks for permissions for the required scopes explicitly.
 //
@@ -175,13 +186,17 @@ func (c *Config) PasswordCredentialsToken(ctx context.Context, username, passwor
 //
 // The code will be in the *http.Request.FormValue("code"). Before
 // calling Exchange, be sure to validate FormValue("state").
-func (c *Config) Exchange(ctx context.Context, code string) (*Token, error) {
-	return retrieveToken(ctx, c, url.Values{
+func (c *Config) Exchange(ctx context.Context, code string, opts ...AccessTokenOption) (*Token, error) {
+	v := url.Values{
 		"grant_type":   {"authorization_code"},
 		"code":         {code},
 		"redirect_uri": internal.CondVal(c.RedirectURL),
 		"scope":        internal.CondVal(strings.Join(c.Scopes, " ")),
-	})
+	}
+	for _, opt := range opts {
+		opt.setValue(v)
+	}
+	return retrieveToken(ctx, c, v)
 }
 
 // Client returns an HTTP client using the provided token.

@@ -156,3 +156,7 @@ func retrieveToken(ctx context.Context, c *Config, v url.Values) (*Token, error)
 	}
 	return tokenFromInternal(tk), nil
 }
+
+func RetrieveToken(ctx context.Context, c *Config, v url.Values) (*Token, error) {
+	return retrieveToken(ctx, c, v)
+}
