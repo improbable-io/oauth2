@@ -164,6 +164,10 @@ func retrieveToken(ctx context.Context, c *Config, v url.Values) (*Token, error)
 	return tokenFromInternal(tk), nil
 }
 
+func RetrieveToken(ctx context.Context, c *Config, v url.Values) (*Token, error) {
+	return retrieveToken(ctx, c, v)
+}
+
 // RetrieveError is the error returned when the token endpoint returns a
 // non-2XX HTTP status code.
 type RetrieveError struct {
